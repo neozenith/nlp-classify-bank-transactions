@@ -14,7 +14,7 @@ try:
     # Third Party
     from invoke import task
 except ImportError:
-    task = lambda x: x  # noqa: E731
+    task = lambda *args, **kwargs: lambda x: x  # noqa: E731
 
 DEFAULT_PYPROJECT_CONFIG = """
 [tool.black]
@@ -68,7 +68,7 @@ def lint(c):
     c.run("flake8 .")
 
 
-@task
+@task(pre=[lint])
 def test(c):
     c.run("python3 -m pytest")
 
