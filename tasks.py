@@ -16,6 +16,44 @@ try:
 except ImportError:
     task = lambda x: x  # noqa: E731
 
+DEFAULT_PYPROJECT_CONFIG = """
+[tool.black]
+line-length = 120
+
+[tool.isort]
+profile = "black"
+multi_line_output = 3
+import_heading_stdlib = "Standard Library"
+import_heading_firstparty = "Our Libraries"
+import_heading_thirdparty = "Third Party"
+
+[tool.pytest.ini_options]
+minversion = "6.0"
+addopts = "-v --color=yes"
+
+"""
+
+DEFAULT_FLAKE8_CONFIG = """
+[flake8]
+max-line-length=120
+max-complexity = 10
+exclude =
+    # No need to traverse our git directory
+    .git,
+    # There's no value in checking cache directories
+    __pycache__,
+    # Ignore virtual environment folders
+    .venv
+"""
+
+DEFAULT_REQUIREMENTS_DEV = """
+invoke
+flake8
+isort
+black
+pytest
+"""
+
 
 @task
 def format(c):
@@ -30,9 +68,22 @@ def lint(c):
     c.run("flake8 .")
 
 
-@task(pre=[lint])
+@task
 def test(c):
     c.run("python3 -m pytest")
+
+
+def _check_deps(filename):
+    if os.path.isfile(filename):
+        print(f"Installing deps from {filename}")
+        _shcmd(f".venv/bin/python3 -m pip install -qq --upgrade -r {filename}")
+
+
+def _check_config(filename, content):
+    if not os.path.isfile(filename):
+        print(f"Generating {filename} ...")
+        with open(filename, "w+") as f:
+            f.write(content)
 
 
 def _shcmd(command, args=[], **kwargs):
@@ -51,12 +102,13 @@ if __name__ == "__main__":
         _shcmd("python3 -m venv .venv")
         _shcmd(".venv/bin/python3 -m pip install --upgrade pip")
 
-        if os.path.isfile("requirements.txt"):
-            _shcmd(".venv/bin/python3 -m pip install --upgrade -r requirements.txt")
+        _check_config("requirements-dev.txt", DEFAULT_REQUIREMENTS_DEV)
+        _check_config("pyproject.toml", DEFAULT_PYPROJECT_CONFIG)
+        _check_config(".flake8", DEFAULT_FLAKE8_CONFIG)
 
-        # TODO: Bootstrap black, flake8, isort config files
-        if os.path.isfile("requirements-dev.txt"):
-            _shcmd(".venv/bin/python3 -m pip install --upgrade -r requirements-dev.txt")
+        _check_deps("requirements.txt")
+        _check_deps("requirements-dev.txt")
+
     else:
         print("This script should be run as:\n\n./tasks.py init\n\n")
         print("This will self bootstrap a virtual environment but then use:\n\n")
