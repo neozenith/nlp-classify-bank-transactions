@@ -98,7 +98,7 @@ def _shcmd(command, args=[], **kwargs):
 if __name__ == "__main__":
 
     if len(sys.argv) >= 2 and sys.argv[1] in ["init"]:
-        _shcmd("rm -rfv .venv")
+        _shcmd("rm -rf .venv")
         _shcmd("python3 -m venv .venv")
         _shcmd(".venv/bin/python3 -m pip install --upgrade pip")
 
