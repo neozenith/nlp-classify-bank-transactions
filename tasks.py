@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
 # Standard Library
 import os
+import platform
 import shlex
 import sys
+from pathlib import Path
 from subprocess import run
 
 # NOTE:
@@ -15,6 +17,10 @@ try:
     from invoke import task
 except ImportError:
     task = lambda *args, **kwargs: lambda x: x  # noqa: E731
+
+VENV_PATH = Path(".venv")
+
+VENV_PY = VENV_PATH / "bin" / "python3" if platform.system() != "Windows" else VENV_PATH / "Scripts" / "python"
 
 DEFAULT_PYPROJECT_CONFIG = """
 [tool.black]
@@ -73,10 +79,15 @@ def test(c):
     c.run("python3 -m pytest")
 
 
+@task
+def lab(c):
+    c.run("jupyter-lab")
+
+
 def _check_deps(filename):
     if os.path.isfile(filename):
         print(f"Installing deps from {filename}")
-        _shcmd(f".venv/bin/python3 -m pip install -qq --upgrade -r {filename}")
+        _shcmd(f"{VENV_PY} -m pip install -qq --upgrade -r {filename}")
 
 
 def _check_config(filename, content):
@@ -100,7 +111,7 @@ if __name__ == "__main__":
     if len(sys.argv) >= 2 and sys.argv[1] in ["init"]:
         _shcmd("rm -rf .venv")
         _shcmd("python3 -m venv .venv")
-        _shcmd(".venv/bin/python3 -m pip install --upgrade pip")
+        _shcmd(f"{VENV_PY} -m pip install --upgrade pip")
 
         _check_config("requirements-dev.txt", DEFAULT_REQUIREMENTS_DEV)
         _check_config("pyproject.toml", DEFAULT_PYPROJECT_CONFIG)

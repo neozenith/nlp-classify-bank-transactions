@@ -1,10 +1,12 @@
 """Convert textcat annotation from JSONL to spaCy v3 .spacy format."""
-import srsly
-import typer
+# Standard Library
 import warnings
 from pathlib import Path
 
+# Third Party
 import spacy
+import srsly
+import typer
 from spacy.tokens import DocBin
 
 

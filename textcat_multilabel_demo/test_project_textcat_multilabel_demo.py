@@ -1,6 +1,9 @@
-from spacy.cli.project.run import project_run
-from spacy.cli.project.assets import project_assets
+# Standard Library
 from pathlib import Path
+
+# Third Party
+from spacy.cli.project.assets import project_assets
+from spacy.cli.project.run import project_run
 
 
 def test_textcat_multilabel_demo_project():
