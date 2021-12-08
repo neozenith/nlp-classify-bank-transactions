@@ -1,3 +1,4 @@
 jupyterlab
+black[jupyter]
 spacy
 scikit-learn
