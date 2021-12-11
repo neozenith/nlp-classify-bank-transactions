@@ -1,4 +1,5 @@
 jupyterlab
 black[jupyter]
 spacy
+fasttext
 scikit-learn
