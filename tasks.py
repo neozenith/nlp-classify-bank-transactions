@@ -63,6 +63,7 @@ pytest
 
 @task
 def format(c):
+    c.run("jupyter nbconvert --ClearOutputPreprocessor.enabled=True --clear-output notebooks/*.ipynb")
     c.run("black .")
     c.run("isort .")
 
