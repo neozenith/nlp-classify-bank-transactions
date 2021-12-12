@@ -3,3 +3,4 @@ black[jupyter]
 spacy
 fasttext
 scikit-learn
+matplotlib
