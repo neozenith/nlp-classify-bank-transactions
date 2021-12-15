@@ -56,3 +56,10 @@ Available tasks:
  - LIME and SHAP explanations of models
     - https://github.com/practical-nlp/practical-nlp-code/blob/master/Ch4/08_LimeDemo.ipynb
     - https://github.com/practical-nlp/practical-nlp-code/blob/master/Ch4/10_ShapDemo.ipynb
+
+# References:
+
+ - https://www.oreilly.com/library/view/applied-natural-language/9781492062561/
+ - https://www.oreilly.com/library/view/mastering-spacy/9781800563353/
+ - https://www.oreilly.com/library/view/practical-natural-language/9781492054047/
+ - https://www.oreilly.com/library/view/natural-language-processing/9781098103231/
