@@ -70,6 +70,7 @@ pytest
 
 @task
 def format(c):
+    """Autoformat code, notebooks and sort imports."""
     c.run("jupyter nbconvert --ClearOutputPreprocessor.enabled=True --clear-output notebooks/*.ipynb")
     c.run("black .")
     c.run("isort .")
@@ -77,6 +78,7 @@ def format(c):
 
 @task
 def lint(c):
+    """Linting and fomatting checks for quality control."""
     c.run("black --check .")
     c.run("isort --check .")
     c.run("flake8 .")
@@ -84,16 +86,19 @@ def lint(c):
 
 @task(pre=[lint])
 def test(c):
+    """Run test suite with dependency on lint task running first."""
     c.run("python3 -m pytest")
 
 
 @task
 def lab(c):
+    """Launch jupyter lab instance."""
     c.run("jupyter-lab")
 
 
 @task(pre=[format])
 def publish(c):
+    """Clean, format and run all notebooks."""
     c.run("jupyter nbconvert --to notebook --inplace --execute notebooks/*.ipynb")
 
 

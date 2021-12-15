@@ -22,13 +22,24 @@ Download example data into `data/`
 Then setup your dev environment:
 
 ```bash
-python3 tasks.py init
-. ./.venv/bin/activate
+python3 tasks.py init && . ./.venv/bin/activate
 invoke lab
 ```
 
-This will open `jupyter-lab` where experiments can be found in `notebooks/`
+This will open `jupyter-lab` where experiments can be found in [`notebooks/`](/notebooks/)
 
+## Project Lifecycle Tasks
+
+```
+ inv --list
+Available tasks:
+
+  format    Autoformat code, notebooks and sort imports.
+  lint      Linting and fomatting checks for quality control.
+  test      Run test suite with dependency on lint task running first.
+  lab       Launch jupyter lab instance.
+  publish   Clean, format and run all notebooks.
+```
 
 ## TODO
 
@@ -38,6 +49,9 @@ This will open `jupyter-lab` where experiments can be found in `notebooks/`
 
  - spacy/floret subword vectors
     - https://explosion.ai/blog/spacy-v3-2#floret
+
+ - Visualise word/subword embeddings of transaction vocab to verify similarity of fragment words
+    - Use t-SNE for dimension reduction of word vectors?
 
  - LIME and SHAP explanations of models
     - https://github.com/practical-nlp/practical-nlp-code/blob/master/Ch4/08_LimeDemo.ipynb
