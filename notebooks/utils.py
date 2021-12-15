@@ -45,7 +45,7 @@ def clean(df: pd.DataFrame) -> pd.DataFrame:
         df = df[~df.desc.str.startswith(k)]
 
     # Tidy up descriptions
-    desc_filters = [" Card xx\d\d\d\d", " Value Date: \d\d/\d\d/\d\d\d\d", " \d\d+", "Direct Debit "]
+    desc_filters = [" Card xx\d\d\d\d", " Value Date: \d\d/\d\d/\d\d\d\d", " \d\d+", "Direct Debit ", " AUS", " AU"]
     for f in desc_filters:
         df.desc = df.desc.str.replace(f, "", regex=True)
 

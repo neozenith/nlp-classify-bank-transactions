@@ -110,7 +110,7 @@ def publish(c):
 def _check_deps(filename):
     if os.path.isfile(filename):
         print(f"Installing deps from {filename}")
-        _shcmd(f"{VENV_PY} -m pip install -qq --upgrade -r {filename}")
+        _shcmd(f"{VENV_PY} -m pip install --upgrade -r {filename}")
 
 
 def _check_config(filename, content):
