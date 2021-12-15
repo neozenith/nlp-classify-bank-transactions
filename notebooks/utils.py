@@ -49,6 +49,10 @@ def clean(df: pd.DataFrame) -> pd.DataFrame:
     for f in desc_filters:
         df.desc = df.desc.str.replace(f, "", regex=True)
 
+    # TODO:
+    # Strip out suburbs
+    # https://raw.githubusercontent.com/michalsn/australian-suburbs/master/data/suburbs.csv
+
     return df
 
 
