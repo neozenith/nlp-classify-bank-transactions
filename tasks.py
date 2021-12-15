@@ -18,8 +18,10 @@ try:
 except ImportError:
     task = lambda *args, **kwargs: lambda x: x  # noqa: E731
 
+###############################################################################
+# Configuration and Constants
+###############################################################################
 VENV_PATH = Path(".venv")
-
 VENV_PY = VENV_PATH / "bin" / "python3" if platform.system() != "Windows" else VENV_PATH / "Scripts" / "python"
 
 DEFAULT_PYPROJECT_CONFIG = """
@@ -61,6 +63,11 @@ pytest
 """
 
 
+###############################################################################
+# Tasks
+###############################################################################
+
+
 @task
 def format(c):
     c.run("jupyter nbconvert --ClearOutputPreprocessor.enabled=True --clear-output notebooks/*.ipynb")
@@ -83,6 +90,16 @@ def test(c):
 @task
 def lab(c):
     c.run("jupyter-lab")
+
+
+@task(pre=[format])
+def publish(c):
+    c.run("jupyter nbconvert --to notebook --inplace --execute notebooks/*.ipynb")
+
+
+###############################################################################
+# Helper Functions
+###############################################################################
 
 
 def _check_deps(filename):
