@@ -30,6 +30,14 @@ def clean(df: pd.DataFrame) -> pd.DataFrame:
     # Remove income and transfers
     df = df[df.amount < 0]
 
+    df = filter_by_prefix(df)
+    df = strip_description_noise(df)
+    # df = strip_description_locations(df)
+
+    return df
+
+
+def filter_by_prefix(df: pd.DataFrame) -> pd.DataFrame:
     # Remove other specific transactions
     prefixes_to_filter = [
         "Transfer",
@@ -44,15 +52,36 @@ def clean(df: pd.DataFrame) -> pd.DataFrame:
     for k in prefixes_to_filter:
         df = df[~df.desc.str.startswith(k)]
 
+    return df
+
+
+def strip_description_noise(df: pd.DataFrame) -> pd.DataFrame:
     # Tidy up descriptions
-    desc_filters = [" Card xx\d\d\d\d", " Value Date: \d\d/\d\d/\d\d\d\d", " \d\d+", "Direct Debit ", " AUS", " AU"]
+    desc_filters = [
+        " Card xx\d\d\d\d",
+        " Value Date: \d\d/\d\d/\d\d\d\d",
+        " \d\d+",
+        "Direct Debit ",
+        " AUS",
+        " AU",
+        " NS",
+        " NSWAU",
+    ]
     for f in desc_filters:
         df.desc = df.desc.str.replace(f, "", regex=True)
 
-    # TODO:
-    # Strip out suburbs
-    # https://raw.githubusercontent.com/michalsn/australian-suburbs/master/data/suburbs.csv
+    df.desc = df.desc.str.replace(f"  ", " ")
+    return df
 
+
+def strip_description_locations(df: pd.DataFrame) -> pd.DataFrame:
+    suburb_list = list(pd.read_csv(Path("../assets/suburbs.csv")).suburb)
+    df.desc = df.desc.str.upper()  # case normalise first
+
+    for suburb in suburb_list:
+        df.desc = df.desc.str.replace(suburb.upper(), "")
+
+    df.desc = df.desc.str.replace(f"  ", " ")
     return df
 
 
@@ -97,7 +126,7 @@ def classify_transaction(transaction_description: str):
         output = "HomeLoan"
     elif any(
         [
-            transaction_description.startswith(k)
+            transaction_description.lower().startswith(k.lower())
             for k in [
                 "COLES EXPRESS",
                 "7-ELEVEN",
@@ -123,7 +152,7 @@ def classify_transaction(transaction_description: str):
 
 def keyword_classifier(transaction_description: str):
     labelled_keywords = {
-        "Vehicle": ["Linkt", "CARLOVERS", "SNAP CAR WASH", "CARDIFF TOYOTA", "CIRCUM WASH"],
+        "Vehicle": ["Linkt", "CARLOVERS", "SNAP CAR WASH", "TOYOTA", "CIRCUM WASH"],
         "Fitness": ["URBANBASEFITNESS", "FITNESS PASSPORT", "The Forum Univer", "THE SELF C*", "REBEL"],
         "Utility": ["BPAY"],
         "Health/Pharmacy": [
@@ -133,17 +162,17 @@ def keyword_classifier(transaction_description: str):
             "HUMMINGBIRD",
             "COUNSELLIN",
             "DOCS MEGASAVE",
-            "Hamilton Doctors",
+            "Doctors",
             "THE GOOD DENTIST",
             "NOVAHEALTH",
             "PRICELINE",
             "SKINTIFIX",
-            "CHARLESTOWN FAMILY MED",
+            "FAMILY MED",
             "WENT PHARM MOSCHAKIS",
             "PLINEPH",
             "PLINE PH",
         ],
-        "Parking": ["EASYPARK", "ParkPay", "WESTFIELD CHATSWOOD", "WESTFIELD KOTARA"],
+        "Parking": ["EASYPARK", "ParkPay", "WESTFIELD"],
         "Newspaper": ["ACM RURAL PRESS"],
         "Cafe": [
             "EQUIUM",
@@ -152,8 +181,8 @@ def keyword_classifier(transaction_description: str):
             "KAWUL",
             "BOCADOS",
             "Cafe",
-            "T MY ENTERPRISE PL MERRIWA",
-            "ALCMARIA PTY LTD CHATSWOOD",
+            "T MY ENTERPRISE PL",
+            "ALCMARIA PTY LTD",
             "SOUL ORIGIN",
             "AUTUMN ROOMS",
             "KAROO & CO",
@@ -164,7 +193,7 @@ def keyword_classifier(transaction_description: str):
             "OLIVERS",
             "MCDONALDS",
             "Subway",
-            "DUNEDOO PIE",
+            "PIE",
             "BAKERS DELIGHT",
         ],
         "Home/Garden/Office": [
@@ -174,7 +203,7 @@ def keyword_classifier(transaction_description: str):
             "BIG W",
             "TARGET",
             "MISTER MINT",
-            "POST WALLSEND",
+            "POST",
             "NewsXpress",
         ],
         "Pets/Vet": ["Veterinary"],
